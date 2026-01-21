@@ -1,5 +1,7 @@
 package com.sarthak.twitterclone.follow;
 
+import com.sarthak.twitterclone.common.exception.InvalidActionException;
+import com.sarthak.twitterclone.common.exception.ResourceNotFoundException;
 import com.sarthak.twitterclone.user.User;
 import com.sarthak.twitterclone.user.UserRepository;
 import org.springframework.stereotype.Service;
@@ -18,14 +20,14 @@ public class FollowService {
     @Transactional
     public void follow(Long followerId, Long targetUserId){
         if (followerId.equals(targetUserId)) {
-            throw new IllegalArgumentException("Cannot follow yourself");
+            throw new InvalidActionException("Cannot follow yourself");
         }
 
         User follower = userRepository.findById(followerId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Follower not found"));
 
         User target = userRepository.findById(targetUserId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Target user not found"));
 
         if (followRepository.existsByFollowerAndFollowing(follower, target)) {
             return; // idempotent
@@ -36,12 +38,13 @@ public class FollowService {
     }
 
     @Transactional
-    public void unfollow(Long followerId, Long targetUserId){
+    public void unfollow(Long followerId, Long targetUserId) {
+
         User follower = userRepository.findById(followerId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Follower not found"));
 
         User target = userRepository.findById(targetUserId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Target user not found"));
 
         followRepository.deleteByFollowerAndFollowing(follower, target);
     }
