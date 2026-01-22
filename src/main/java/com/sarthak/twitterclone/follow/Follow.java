@@ -35,5 +35,13 @@ public class Follow {
         this.follower = follower;
         this.following = following;
     }
+
+    public User getFollower() {
+        return follower;
+    }
+
+    public User getFollowing() {
+        return following;
+    }
 }
 
